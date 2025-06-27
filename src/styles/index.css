@@ -1,0 +1,39 @@
+body {
+    > header > altshift-header {
+        display: block;
+        width: var(--header-footer-width);
+        margin-left: auto;
+        margin-right: auto;
+        background-color: var(--altshift-main-color);
+    }
+
+    > footer > altshift-footer {
+        display: block;
+        width: var(--header-footer-width);
+        margin: 4rem auto 0 auto;
+
+        > altshift-box {
+            border-left: var(--altshift-border-width) solid var(--altshift-border-color);
+
+            @media screen and (max-width: 1280px) {
+                display: none;
+            }
+
+            > * {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                padding: 0 2rem;
+            }
+        }
+
+        svg {
+            width: 2rem;
+            path {
+                fill: var(--altshift-text-color);
+            }
+        }
+    }
+}
+
