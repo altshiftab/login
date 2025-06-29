@@ -7,6 +7,15 @@ body {
         background-color: var(--altshift-main-color);
     }
 
+    > main {
+        > login-element {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
     > footer > altshift-footer {
         display: block;
         width: var(--header-footer-width);
