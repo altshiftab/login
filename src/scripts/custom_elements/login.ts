@@ -2,7 +2,6 @@ import {css, html, LitElement, svg} from "lit";
 import {customElement, property} from "lit/decorators.js"
 import "@altshiftab/web_components/button";
 
-
 interface IdentityProvider {
     configURL: string;
     clientId: string;
@@ -23,7 +22,6 @@ interface ExtendedCredential extends Credential {
     token?: string;
 }
 
-
 const passkeysIcon = svg`
     <svg viewBox="50 30 100 160">
         <g>
@@ -34,6 +32,8 @@ const passkeysIcon = svg`
         </g>
     </svg>`
 ;
+
+const googleManifestUrl = "https://accounts.google.com/gsi/fedcm.json"
 
 @customElement("login-element")
 export class LoginElement extends LitElement {
@@ -86,17 +86,27 @@ export class LoginElement extends LitElement {
     }
 
     async loginWithGoogle() {
-        const credential = await navigator.credentials.get({
-            identity: {
-                providers: [
-                    {
-                        configURL: "https://accounts.google.com/gsi/fedcm.json",
-                        clientId: this.googleClientId
-                    }
-                ]
-            },
-        } as ExtendedCredentialRequestOptions);
-        if (credential == null)
+        let credential: ExtendedCredential | null = null;
+
+        try {
+            credential = await navigator.credentials.get({
+                identity: {
+                    mode: "active",
+                    providers: [
+                        {
+                            configURL: googleManifestUrl,
+                            clientId: this.googleClientId
+                        }
+                    ],
+                },
+            } as ExtendedCredentialRequestOptions);
+        } catch (err) {
+            if (err instanceof DOMException && err.name === "NotSupportedError")
+                return void this.redirectLogin("google");
+            throw err;
+        }
+
+        if (credential === null)
             return void this.redirectLogin("google");
 
         const response = await fetch(
@@ -110,10 +120,7 @@ export class LoginElement extends LitElement {
         // TODO: Revise
         if (String(response.status).startsWith("4")) {
             console.error("Unable to use FedCM: ", await response.text());
-            return void this.redirectLogin("google");
         }
-
-        return
     }
 
     render() {

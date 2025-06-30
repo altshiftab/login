@@ -1,6 +1,6 @@
 {
   "name": "login",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "type": "module",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "lit": "^3.2.1"
   },
   "devDependencies": {
-    "@altshiftab/http_service_utils_js": "^0.0.1",
+    "@altshiftab/http_service_utils_js": "^0.0.2",
     "@altshiftab/webpack_configuration": "^0.0.7",
     "typescript": "^5.8.3",
     "webpack-cli": "^5.1.4"
