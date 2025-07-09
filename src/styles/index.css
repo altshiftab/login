@@ -1,46 +1,63 @@
 body {
-    > header > altshift-header {
-        display: block;
-        width: var(--header-footer-width);
-        margin-left: auto;
-        margin-right: auto;
-        background-color: var(--altshift-main-color);
+    > #passkey-icon {
+        display: none;
     }
 
     > main {
-        > login-element {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        > section {
+            display: block;
+
+            > .buttons-container {
+                display: grid;
+                gap: 1rem;
+
+                align-items: flex-start;
+
+                > altshift-button {
+                    width: auto;
+
+                    > * {
+                        padding: 0;
+                    }
+
+                    > div {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 0.703125rem;
+
+                        padding: 0.703125rem 0.84375rem;
+
+                        > svg {
+                            width: 1.40625rem;
+                            height: 1.40625rem;
+                            flex-shrink: 0;
+                            display: inline-block;
+                        }
+
+                        > span {
+                            line-height: 1;
+                        }
+                    }
+                }
+            }
         }
     }
 
-    > footer > altshift-footer {
-        display: block;
-        width: var(--header-footer-width);
-        margin: 4rem auto 0 auto;
+    > #register-passkey-dialog {
+        max-width: 80ch;
 
-        > altshift-box {
-            border-left: var(--altshift-border-width) solid var(--altshift-border-color);
+        > form {
+            display: grid;
+            gap: 1em;
 
-            @media screen and (max-width: 1280px) {
-                display: none;
+            > .label-container {
+                display: grid;
             }
 
-            > * {
+            > .buttons-container {
                 display: flex;
-                align-items: center;
-                justify-content: center;
-                height: 100%;
-                padding: 0 2rem;
-            }
-        }
-
-        svg {
-            width: 2rem;
-            path {
-                fill: var(--altshift-text-color);
+                justify-content: flex-end;
+                gap: 1em;
             }
         }
     }

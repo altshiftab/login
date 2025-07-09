@@ -1,6 +1,6 @@
 {
   "name": "login",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "repository": {
     "type": "git",
@@ -14,13 +14,13 @@
     "release": "npm run build && (cd dist && zip -r ../dist.zip .) && gh release create v\"$(jq -r '.version' package.json)\" dist.zip --title '' --notes '' && rm -f dist.zip"
   },
   "dependencies": {
-    "@altshiftab/styles": "^0.0.1",
-    "@altshiftab/web_components": "^0.0.54",
+    "@altshiftab/styles": "^0.0.4",
+    "@altshiftab/web_components": "^0.0.55",
     "lit": "^3.2.1"
   },
   "devDependencies": {
     "@altshiftab/http_service_utils_js": "^0.0.2",
-    "@altshiftab/webpack_configuration": "^0.0.7",
+    "@altshiftab/webpack_configuration": "^0.0.11",
     "typescript": "^5.8.3",
     "webpack-cli": "^5.1.4"
   }
