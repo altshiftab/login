@@ -50,8 +50,9 @@ body {
             display: grid;
             gap: 1em;
 
-            > .label-container {
+            > .input-container {
                 display: grid;
+                gap: 0.5em;
             }
 
             > .buttons-container {

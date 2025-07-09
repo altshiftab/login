@@ -81,15 +81,15 @@
         The passkey must be tied to an identity in the form of an email address. To register a passkey, the identity must first be verified. Enter your email address and submit to receive a verification email.
     </p>
 
-    <form>
-        <div class="label-container">
+    <form id="register-passkey-form">
+        <div class="input-container">
             <label for="register-passkey-input">Email address</label>
-            <input id="register-passkey-input" type="email" name="email_address" required/>
+            <input id="register-passkey-input" type="email" name="email_address" placeholder="" required/>
         </div>
 
         <div class="buttons-container">
             <altshift-button formmethod="dialog">Close</altshift-button>
-            <altshift-button>Submit</altshift-button>
+            <altshift-button id="register-passkey-submit-button" type="submit">Submit</altshift-button>
         </div>
     </form>
 </dialog>

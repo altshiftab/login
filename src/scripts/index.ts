@@ -27,7 +27,6 @@ interface ExtendedCredential extends Credential {
     token?: string;
 }
 
-
 addErrorEventListeners();
 
 const googleClientId = "753322439415-noodo7tfs80q6aei9g5eqokc37ts1h3h.apps.googleusercontent.com"
@@ -92,7 +91,37 @@ document.addEventListener("DOMContentLoaded", () => {
     if (registerPasskeyDialog === null)
         throw new Error("Register passkey dialog not found");
 
+    const registerPasskeyForm = document.getElementById("register-passkey-form");
+    if (registerPasskeyForm === null)
+        throw new Error("Register passkey form not found");
+
+
     signInWithGoogleButton.addEventListener("click", () => loginWithGoogle());
     signInWithMicrosoftButton.addEventListener("click", () => redirectLogin("microsoft"));
     registerPasskeyButton.addEventListener("click", () => (registerPasskeyDialog as HTMLDialogElement).showModal());
+
+    registerPasskeyForm.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const form = event.currentTarget as HTMLFormElement;
+        if (form === null)
+            throw new Error("The form element was not found");
+
+        const response = await fetch(
+            "/api/register/passkey/email-address",
+            {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(Object.fromEntries((new FormData(form) as any).entries()))
+            }
+        );
+
+        if (!response.ok) {
+            // TODO: Show something to the user?
+            throw new Error("The fetch passkey register response has an erroneous status code.");
+        }
+
+        window.alert("An email was sent.");
+        (registerPasskeyDialog as HTMLDialogElement).close();
+    });
 });

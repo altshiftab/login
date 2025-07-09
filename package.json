@@ -14,8 +14,8 @@
     "release": "npm run build && (cd dist && zip -r ../dist.zip .) && gh release create v\"$(jq -r '.version' package.json)\" dist.zip --title '' --notes '' && rm -f dist.zip"
   },
   "dependencies": {
-    "@altshiftab/styles": "^0.0.4",
-    "@altshiftab/web_components": "^0.0.55",
+    "@altshiftab/styles": "^0.0.6",
+    "@altshiftab/web_components": "^0.0.57",
     "lit": "^3.2.1"
   },
   "devDependencies": {
