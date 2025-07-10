@@ -5,18 +5,20 @@ body > main > section {
     max-width: 80ch;
     margin: auto;
 
-    > .inputs-container {
-        display: grid;
-        gap: 1em;
-
-        > .input-container {
+    > form {
+        > .inputs-container {
             display: grid;
-            gap: 0.5em;
-        }
-    }
+            gap: 1em;
 
-    > .button-container {
-        display: flex;
-        justify-content: flex-end;
+            > .input-container {
+                display: grid;
+                gap: 0.5em;
+            }
+        }
+
+        > .button-container {
+            display: flex;
+            justify-content: flex-end;
+        }
     }
 }

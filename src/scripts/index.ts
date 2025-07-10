@@ -123,5 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         window.alert("An email was sent.");
         (registerPasskeyDialog as HTMLDialogElement).close();
+        form.reset();
     });
 });
