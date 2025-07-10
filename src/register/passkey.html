@@ -11,24 +11,24 @@
 <header><altshift-header homeUrl="#" noMenu></altshift-header></header>
 <main>
     <section>
-        <div class="inputs-container">
-            <div class="input-container">
-                <label for="account-name-input">Identity</label>
-                <input id="account-name-input" readonly/>
+        <form id="submit-form">
+            <div class="inputs-container">
+                <div class="input-container">
+                    <label for="account-name-input">Identity</label>
+                    <input id="account-name-input" readonly/>
+                </div>
+
+                <div class="input-container">
+                    <label for="display-name-input">Display name</label>
+                    <input id="display-name-input" name="display_name"/>
+                    <small>A display name may be used in place of the identity.</small>
+                </div>
             </div>
 
-            <div class="input-container">
-                <label for="display-name-input">Display name</label>
-                <input id="display-name-input"/>
-                <small>
-                    A display name may be used in place of the identity.
-                </small>
+            <div class="button-container">
+                <altshift-button id="register-button">Register</altshift-button>
             </div>
-        </div>
-
-        <div class="button-container">
-            <altshift-button id="register-button">Register</altshift-button>
-        </div>
+        </form>
     </section>
 </main>
 

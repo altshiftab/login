@@ -15,9 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (accountNameInput === null)
         throw new Error("The account name input was not found");
 
-    const registerButton = document.getElementById("register-button")
-    if (registerButton === null)
-        throw new Error("The register button was not found");
+    const submitForm = document.getElementById("submit-form");
+    if (submitForm === null)
+        throw new Error("The submit form was not found");
 
     const token = new URL(window.location.href).searchParams.get("token");
     if (!token)
@@ -33,54 +33,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
     (accountNameInput as HTMLInputElement).value = payload.sub;
 
-    registerButton.addEventListener(
-        "click",
-        async event => {
-            // TODO: Disable the button.
+    submitForm.addEventListener("submit", async event => {
+        event.preventDefault();
 
-            const optionsResponse = await fetch("/api/register/passkey/options", {credentials: "include"})
-            if (!optionsResponse.ok) {
-                // TODO: Show something to the user? Check problem detail format?
-                throw new Error("The fetch passkey options response has an erroneous status code.");
+        const form = event.currentTarget as HTMLFormElement;
+        if (form === null)
+            throw new Error("The form element was not found");
+
+        const optionsResponse = await fetch(
+            "/api/register/passkey/options",
+            {
+
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(Object.fromEntries((new FormData(form) as any).entries())),
+                credentials: "include"
             }
+        );
+        if (!optionsResponse.ok) {
+            // TODO: Show something to the user? Check problem detail format?
+            throw new Error("The fetch passkey options response has an erroneous status code.");
+        }
 
-            const credential = await navigator.credentials.create({
-                publicKey: PublicKeyCredential.parseCreationOptionsFromJSON(await optionsResponse.json())
-            });
+        const credential = await navigator.credentials.create({
+            publicKey: PublicKeyCredential.parseCreationOptionsFromJSON(await optionsResponse.json())
+        });
 
-            // TODO: Check excluded credentials?
+        // TODO: Check excluded credentials?
 
-            const registerResponse = await fetch(
-                "/api/register/passkey",
-                {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
-                    credentials: "include"
+        const registerResponse = await fetch(
+            "/api/register/passkey",
+            {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
+                credentials: "include"
+            }
+        )
+        if (!registerResponse.ok) {
+            /*
+                // Detect authentication failure due to lack of the credential
+                if (response.status === 404) {
+                  // Feature detection
+                  if (PublicKeyCredential.signalUnknownCredential) {
+                    await PublicKeyCredential.signalUnknownCredential({
+                      rpId: "example.com",
+                      credentialId: "vI0qOggiE3OT01ZRWBYz5l4MEgU0c7PmAA" // base64url encoded credential ID
+                    });
+                  } else {
+                    // Encourage the user to delete the passkey from the password manager nevertheless.
+                    ...
+                  }
                 }
-            )
-            if (!registerResponse.ok) {
-                /*
-                    // Detect authentication failure due to lack of the credential
-                    if (response.status === 404) {
-                      // Feature detection
-                      if (PublicKeyCredential.signalUnknownCredential) {
-                        await PublicKeyCredential.signalUnknownCredential({
-                          rpId: "example.com",
-                          credentialId: "vI0qOggiE3OT01ZRWBYz5l4MEgU0c7PmAA" // base64url encoded credential ID
-                        });
-                      } else {
-                        // Encourage the user to delete the passkey from the password manager nevertheless.
-                        ...
-                      }
-                    }
-                 */
-                // TODO: Show something to the user? Check problem detail format?
-                throw new Error("The fetch passkey register response has an erroneous status code.");
-            }
-        },
-        {once: true}
-    );
+             */
+            // TODO: Show something to the user? Check problem detail format?
+            throw new Error("The fetch passkey register response has an erroneous status code.");
+        }
+    });
 })
 
 
