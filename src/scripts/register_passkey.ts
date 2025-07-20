@@ -40,12 +40,19 @@ document.addEventListener("DOMContentLoaded", () => {
         if (form === null)
             throw new Error("The form element was not found");
 
+        const formDataObject: {[key: string]: any} = {};
+        for (const [key, value] of (new FormData(form) as any).entries()) {
+            if (value) {
+                formDataObject[key] = value;
+            }
+        }
+
         const optionsResponse = await fetch(
             "/api/register/passkey/options",
             {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(Object.fromEntries((new FormData(form) as any).entries())),
+                body: JSON.stringify(formDataObject),
                 credentials: "include"
             }
         );
@@ -89,6 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
             throw new Error("The fetch passkey register response has an erroneous status code.");
         }
     });
-})
+});
 
 
