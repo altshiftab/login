@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const credential = await navigator.credentials.get({
-            publicKey: PublicKeyCredential.parseCreationOptionsFromJSON(await optionsResponse.json())
+            publicKey: PublicKeyCredential.parseRequestOptionsFromJSON(await optionsResponse.json())
         });
 
         // TODO: Check excluded credentials?
