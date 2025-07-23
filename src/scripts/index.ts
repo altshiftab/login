@@ -83,6 +83,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (signInWithMicrosoftButton === null)
         throw new Error("Sign in with Microsoft button not found");
 
+    const signInWithPasskeyButton = document.getElementById("sign-in-with-passkey-button");
+    if (signInWithPasskeyButton === null)
+        throw new Error("Sign in with passkey button not found");
+
     const registerPasskeyButton = document.getElementById("register-passkey-button");
     if (registerPasskeyButton === null)
         throw new Error("Register passkey button not found");
@@ -98,6 +102,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     signInWithGoogleButton.addEventListener("click", () => loginWithGoogle());
     signInWithMicrosoftButton.addEventListener("click", () => redirectLogin("microsoft"));
+    signInWithPasskeyButton.addEventListener("click", async () => {
+        const optionsResponse = await fetch("/api/login/passkey/options");
+        if (!optionsResponse.ok) {
+            // TODO: Show something to the user? Check problem detail format?
+            throw new Error("The fetch passkey options response has an erroneous status code.");
+        }
+
+        const credential = await navigator.credentials.get({
+            publicKey: PublicKeyCredential.parseCreationOptionsFromJSON(await optionsResponse.json())
+        });
+
+        // TODO: Check excluded credentials?
+
+        const registerResponse = await fetch(
+            "/api/login/passkey",
+            {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
+                credentials: "include"
+            }
+        )
+        if (!registerResponse.ok) {
+            // TODO: Show something to the user? Check problem detail format?
+            throw new Error("The fetch passkey login response has an erroneous status code.");
+        }
+    });
     registerPasskeyButton.addEventListener("click", () => (registerPasskeyDialog as HTMLDialogElement).showModal());
 
     registerPasskeyForm.addEventListener("submit", async event => {
