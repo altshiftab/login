@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!payload.sub)
         throw new Error("No subject in the JWT payload");
 
-    (accountNameInput as HTMLInputElement).value = payload.sub;
+    (accountNameInput as HTMLInputElement).value = payload.sub.split(":", 2).at(1);
 
     submitForm.addEventListener("submit", async event => {
         event.preventDefault();

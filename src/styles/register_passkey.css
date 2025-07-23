@@ -6,6 +6,9 @@ body > main > section {
     margin: auto;
 
     > form {
+        display: grid;
+        gap: 1em;
+
         > .inputs-container {
             display: grid;
             gap: 1em;
