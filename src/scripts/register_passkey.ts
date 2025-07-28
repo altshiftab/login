@@ -40,19 +40,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (form === null)
             throw new Error("The form element was not found");
 
-        const formDataObject: {[key: string]: any} = {};
-        for (const [key, value] of (new FormData(form) as any).entries()) {
-            if (value) {
-                formDataObject[key] = value;
-            }
-        }
-
         const optionsResponse = await fetch(
             "/api/register/passkey/options",
             {
-                method: "POST",
+                method: "GET",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(formDataObject),
                 credentials: "include"
             }
         );
@@ -61,9 +53,12 @@ document.addEventListener("DOMContentLoaded", () => {
             throw new Error("The fetch passkey options response has an erroneous status code.");
         }
 
-        const credential = await navigator.credentials.create({
-            publicKey: PublicKeyCredential.parseCreationOptionsFromJSON(await optionsResponse.json())
-        });
+        const publicKey = PublicKeyCredential.parseCreationOptionsFromJSON(
+            await optionsResponse.json()
+        );
+        publicKey.user.displayName = (new FormData(form) as any).get("display_name") as string;
+
+        const credential = await navigator.credentials.create({publicKey});
 
         // TODO: Check excluded credentials?
 
@@ -77,21 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         )
         if (!registerResponse.ok) {
-            /*
-                // Detect authentication failure due to lack of the credential
-                if (response.status === 404) {
-                  // Feature detection
-                  if (PublicKeyCredential.signalUnknownCredential) {
-                    await PublicKeyCredential.signalUnknownCredential({
-                      rpId: "example.com",
-                      credentialId: "vI0qOggiE3OT01ZRWBYz5l4MEgU0c7PmAA" // base64url encoded credential ID
-                    });
-                  } else {
-                    // Encourage the user to delete the passkey from the password manager nevertheless.
-                    ...
-                  }
-                }
-             */
+            if ("signalUnknownCredential" in PublicKeyCredential)
+                (PublicKeyCredential as any).signalUnknownCredential((credential as PublicKeyCredential).id);
+
             // TODO: Show something to the user? Check problem detail format?
             throw new Error("The fetch passkey register response has an erroneous status code.");
         }
