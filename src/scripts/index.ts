@@ -32,6 +32,22 @@ addErrorEventListeners();
 const googleClientId = "753322439415-noodo7tfs80q6aei9g5eqokc37ts1h3h.apps.googleusercontent.com"
 const googleManifestUrl = "https://accounts.google.com/gsi/fedcm.json"
 
+function getRedirectUrl(): URL | null {
+    const locationUrl = new URL(window.location.href);
+
+    const redirectValue = locationUrl.searchParams.get("redirect")
+    if (!redirectValue)
+        return null;
+    const redirectUrl = new URL(redirectValue);
+
+    const locationRegisteredDomain = locationUrl.hostname.split(".").slice(-2).join(".");
+    const redirectRegisteredDomain = redirectUrl.hostname.split(".").slice(-2).join(".");
+    if (locationRegisteredDomain !== redirectRegisteredDomain)
+        return null;
+
+    return redirectUrl;
+}
+
 function redirectLogin(provider: "google" | "microsoft") {
     window.location.href = `/api/login/${provider}`;
 }
@@ -94,11 +110,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const registerPasskeyDialog = document.getElementById("register-passkey-dialog");
     if (registerPasskeyDialog === null)
         throw new Error("Register passkey dialog not found");
+    if (!(registerPasskeyDialog instanceof HTMLDialogElement))
+        throw new Error("Register passkey dialog is not a dialog");
 
     const registerPasskeyForm = document.getElementById("register-passkey-form");
     if (registerPasskeyForm === null)
         throw new Error("Register passkey form not found");
-
 
     signInWithGoogleButton.addEventListener("click", () => loginWithGoogle());
     signInWithMicrosoftButton.addEventListener("click", () => redirectLogin("microsoft"));
@@ -112,24 +129,28 @@ document.addEventListener("DOMContentLoaded", () => {
         const credential = await navigator.credentials.get({
             publicKey: PublicKeyCredential.parseRequestOptionsFromJSON(await optionsResponse.json())
         });
+        if (!(credential instanceof PublicKeyCredential))
+            throw new Error("Credential is not a public key credential.")
 
         // TODO: Check excluded credentials?
 
-        const registerResponse = await fetch(
+        const loginResponse = await fetch(
             "/api/login/passkey",
             {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
+                body: JSON.stringify(credential.toJSON()),
                 credentials: "include"
             }
         )
-        if (!registerResponse.ok) {
+        if (!loginResponse.ok) {
             // TODO: Show something to the user? Check problem detail format?
             throw new Error("The fetch passkey login response has an erroneous status code.");
         }
+
+        window.location.href = getRedirectUrl()?.href ?? "https://www.altshift.se/";
     });
-    registerPasskeyButton.addEventListener("click", () => (registerPasskeyDialog as HTMLDialogElement).showModal());
+    registerPasskeyButton.addEventListener("click", () => registerPasskeyDialog.showModal());
 
     registerPasskeyForm.addEventListener("submit", async event => {
         event.preventDefault();
@@ -153,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         window.alert("An email was sent.");
-        (registerPasskeyDialog as HTMLDialogElement).close();
+        registerPasskeyDialog.close();
         form.reset();
     });
 });

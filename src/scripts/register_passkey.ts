@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const submitForm = document.getElementById("submit-form");
     if (submitForm === null)
         throw new Error("The submit form was not found");
+    if (!(submitForm instanceof HTMLFormElement))
+        throw new Error("The submit form is not a form.");
 
     const token = new URL(window.location.href).searchParams.get("token");
     if (!token)
@@ -36,10 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
     submitForm.addEventListener("submit", async event => {
         event.preventDefault();
 
-        const form = event.currentTarget as HTMLFormElement;
-        if (form === null)
-            throw new Error("The form element was not found");
-
         const optionsResponse = await fetch(
             "/api/register/passkey/options",
             {
@@ -56,9 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const publicKey = PublicKeyCredential.parseCreationOptionsFromJSON(
             await optionsResponse.json()
         );
-        publicKey.user.displayName = (new FormData(form) as any).get("display_name") as string;
+        publicKey.user.displayName = (new FormData(submitForm) as any).get("display_name") as string;
 
         const credential = await navigator.credentials.create({publicKey});
+        if (!(credential instanceof PublicKeyCredential))
+            throw new Error("Credential is not a public key credential.")
 
         // TODO: Check excluded credentials?
 
@@ -67,13 +67,13 @@ document.addEventListener("DOMContentLoaded", () => {
             {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
+                body: JSON.stringify(credential.toJSON()),
                 credentials: "include"
             }
         )
         if (!registerResponse.ok) {
             if ("signalUnknownCredential" in PublicKeyCredential)
-                (PublicKeyCredential as any).signalUnknownCredential((credential as PublicKeyCredential).id);
+                (PublicKeyCredential as any).signalUnknownCredential(credential.id);
 
             // TODO: Show something to the user? Check problem detail format?
             throw new Error("The fetch passkey register response has an erroneous status code.");
