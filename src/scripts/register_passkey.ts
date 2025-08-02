@@ -51,12 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
             throw new Error("The fetch passkey options response has an erroneous status code.");
         }
 
-        const publicKey = PublicKeyCredential.parseCreationOptionsFromJSON(
+        const creationOptions = PublicKeyCredential.parseCreationOptionsFromJSON(
             await optionsResponse.json()
         );
-        publicKey.user.displayName = (new FormData(submitForm) as any).get("display_name") as string;
+        creationOptions.user.displayName = (new FormData(submitForm) as any).get("display_name") as string;
 
-        const credential = await navigator.credentials.create({publicKey});
+        const credential = await navigator.credentials.create({publicKey: creationOptions});
         if (!(credential instanceof PublicKeyCredential))
             throw new Error("Credential is not a public key credential.")
 
@@ -73,7 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
         )
         if (!registerResponse.ok) {
             if ("signalUnknownCredential" in PublicKeyCredential)
-                (PublicKeyCredential as any).signalUnknownCredential(credential.id);
+                (PublicKeyCredential as any).signalUnknownCredential({
+                    credentialId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+                    rpId: creationOptions.rp.id,
+                });
 
             // TODO: Show something to the user? Check problem detail format?
             throw new Error("The fetch passkey register response has an erroneous status code.");

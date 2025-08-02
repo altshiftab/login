@@ -1,6 +1,6 @@
 {
   "name": "login",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "type": "module",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@altshiftab/styles": "^0.0.6",
-    "@altshiftab/web_components": "^0.0.61",
+    "@altshiftab/web_components": "^0.0.63",
     "lit": "^3.2.1"
   },
   "devDependencies": {

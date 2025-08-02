@@ -116,6 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const registerPasskeyForm = document.getElementById("register-passkey-form");
     if (registerPasskeyForm === null)
         throw new Error("Register passkey form not found");
+    if (!(registerPasskeyForm instanceof HTMLFormElement))
+        throw new Error("Register passkey form is not a form");
 
     signInWithGoogleButton.addEventListener("click", () => loginWithGoogle());
     signInWithMicrosoftButton.addEventListener("click", () => redirectLogin("microsoft"));
@@ -155,16 +157,12 @@ document.addEventListener("DOMContentLoaded", () => {
     registerPasskeyForm.addEventListener("submit", async event => {
         event.preventDefault();
 
-        const form = event.currentTarget as HTMLFormElement;
-        if (form === null)
-            throw new Error("The form element was not found");
-
         const response = await fetch(
             "/api/register/passkey/email-address",
             {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(Object.fromEntries((new FormData(form) as any).entries()))
+                body: JSON.stringify(Object.fromEntries((new FormData(registerPasskeyForm) as any).entries()))
             }
         );
 
@@ -175,6 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         window.alert("An email was sent.");
         registerPasskeyDialog.close();
-        form.reset();
+        registerPasskeyForm.reset();
     });
 });
