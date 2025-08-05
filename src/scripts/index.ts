@@ -31,6 +31,7 @@ addErrorEventListeners();
 
 const googleClientId = "753322439415-noodo7tfs80q6aei9g5eqokc37ts1h3h.apps.googleusercontent.com"
 const googleManifestUrl = "https://accounts.google.com/gsi/fedcm.json"
+const defaultRedirectUrl = "https://private.alt-shift.se/"
 
 function getRedirectUrl(): URL | null {
     const locationUrl = new URL(window.location.href);
@@ -88,6 +89,8 @@ async function loginWithGoogle() {
     if (String(response.status).startsWith("4")) {
         return void console.error("Unable to use FedCM: ", await response.text());
     }
+
+    window.location.href = getRedirectUrl()?.href ?? defaultRedirectUrl;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -120,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error("Register passkey form is not a form");
 
     signInWithGoogleButton.addEventListener("click", () => loginWithGoogle());
-    signInWithMicrosoftButton.addEventListener("click", () => redirectLogin("microsoft"));
+    // signInWithMicrosoftButton.addEventListener("click", () => redirectLogin("microsoft"));
     signInWithPasskeyButton.addEventListener("click", async () => {
         const optionsResponse = await fetch("/api/login/passkey/options");
         if (!optionsResponse.ok) {
@@ -150,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
             throw new Error("The fetch passkey login response has an erroneous status code.");
         }
 
-        window.location.href = getRedirectUrl()?.href ?? "https://www.altshift.se/";
+        window.location.href = getRedirectUrl()?.href ?? defaultRedirectUrl;
     });
     registerPasskeyButton.addEventListener("click", () => registerPasskeyDialog.showModal());
 
